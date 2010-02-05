@@ -4,7 +4,7 @@ if select(2, UnitClass("player")) == "WARLOCK" then
 -- CONFIG -----------------------------------------------------------------------------------------------
 
 local minHealth = 240000		-- minimum health of target for pDrainSoulTimer to do anything
-local notification = false		-- if you want a notification in the chatframe when the addon enables
+local notification = false		-- if you want a notification in the chatframe when the addon activates
 local alwaysPlayTick = false	-- plays the drain soul tick sound for all specs
 
 -- END CONFIG -------------------------------------------------------------------------------------------
