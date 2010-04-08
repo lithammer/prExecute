@@ -1,11 +1,11 @@
-if select(2, UnitClass("player")) == "WARLOCK" then
+if not select(2, UnitClass("player")) == "WARLOCK" then return end
 
 
 -- CONFIG -----------------------------------------------------------------------------------------------
 
 local minHealth = 240000		-- minimum health of target for pDrainSoulTimer to do anything
 local notification = false		-- if you want a notification in the chatframe when the addon activates
-local alwaysPlayTick = false	-- plays the drain soul tick sound for all specs
+local alwaysPlayTick = true		-- plays the drain soul tick sound for all specs
 
 -- END CONFIG -------------------------------------------------------------------------------------------
 
@@ -80,5 +80,3 @@ end
 function f:PLAYER_TARGET_CHANGED()
 	played = false
 end
-
-end -- end warlock check
