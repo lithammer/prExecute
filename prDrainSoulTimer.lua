@@ -1,4 +1,4 @@
-if not select(2, UnitClass("player")) == "WARLOCK" then return end
+if select(2, UnitClass("player")) ~= "WARLOCK" then return end
 
 
 -- CONFIG -----------------------------------------------------------------------------------------------
