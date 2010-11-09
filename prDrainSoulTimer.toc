@@ -1,7 +1,4 @@
-## Interface: 30300
+## Interface: 40000
 ## Title: |cff669933pr|rDrainSoulTimer
-## Version: 1.0
-## Author: Peter
-## Notes: Drain Soul tick and execution phase notifier
 
 prDrainSoulTimer.lua
