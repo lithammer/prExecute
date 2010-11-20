@@ -16,7 +16,7 @@ end)
 
 local rank, maxRank = nil, nil
 
-local function hasExecute()
+local function checkForExecute()
 	local hasExecute = false
 	if playerClass == 'WARLOCK' and select(5, GetTalentInfo(1, 13) > 0 then
 		hasExecute = true
@@ -46,11 +46,11 @@ local function hasExecute()
 end
 
 function f:ACTIVE_TALENT_GROUP_CHANGED()
-	hasExecute()
+	checkForExecute()
 end
 
 function f:PLAYER_ALIVE()
-	hasExecute()
+	checkForExecute()
 end
 	
 function f:COMBAT_LOG_EVENT_UNFILTERED(event, ...)
