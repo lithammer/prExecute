@@ -8,9 +8,19 @@ if playerClass == ('HUNTER' or 'PALADIN' or 'WARRIOR') then
 	executeRange = 0.20
 end
 
+-- Event handling
+local OnEvent = function(self, event, ...)
+	addon[event](self, event, ...)
+end
+
+local frame = CreateFrame('Frame')
+frame:SetScript("OnEvent", OnEvent)
+frame:RegisterEvent('PLAYER_ENTERING_WORLD')
+
 local checkForExecute = function()
 	local hasExecute = false
-	if playerClass == 'WARLOCK' and select(5, GetTalentInfo(1, 13) > 0 then
+	
+	if playerClass == 'WARLOCK' and select(5, GetTalentInfo(1, 13)) > 0 then
 		hasExecute = true
 	elseif playerClass == 'PRIEST' and GetPrimaryTalentTree() == 3 then
 		hasExecute = true
@@ -23,6 +33,7 @@ local checkForExecute = function()
 	end
 	
 	if hasExecute then
+		print('Execute found, activating!')
 		frame:RegisterEvent('UNIT_HEALTH')
 		frame:RegisterEvent('PLAYER_TARGET_CHANGED')
 		if playerClass == 'WARLOCK' then
@@ -37,18 +48,13 @@ local checkForExecute = function()
 	end
 end
 
--- Event handling
-local OnEvent = function(self, event, ...)
-	addon[event](self, event, ...)
-end
-
 function addon:ACTIVE_TALENT_GROUP_CHANGED()
 	checkForExecute()
 end
 
-function addon:PLAYER_ALIVE()
+function addon:PLAYER_ENTERING_WORLD()
 	frame:RegisterEvent('ACTIVE_TALENT_GROUP_CHANGED')
-	frame:UnregisterEvent('PLAYER_ALIVE')
+	frame:UnregisterEvent('PLAYER_ENTERING_WORLD')
 	checkForExecute()
 end
 	
@@ -81,11 +87,6 @@ function addon:UNIT_HEALTH(self, unit)
 	end
 end
 
-function f:PLAYER_TARGET_CHANGED()
+function addon:PLAYER_TARGET_CHANGED()
 	played = false
 end
-
-
-local frame = CreateFrame('Frame')
-frame:SetScript("OnEvent", OnEvent)
-frame:RegisterEvent('PLAYER_ALIVE')
