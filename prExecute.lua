@@ -1,11 +1,5 @@
 local addonName, ns = ...
 
--- CONFIG -----------------------------------------------------------------------------------------------
-
-local alwaysPlayTick = true		-- plays the drain soul tick sound for all specs
-
--- END CONFIG -------------------------------------------------------------------------------------------
-
 local playerClass = select(2, UnitClass('player'))
 
 local played = false
@@ -28,7 +22,7 @@ function checkForTalent()
 		hasExecute = true
 	elseif playerClass == 'PRIEST' and GetPrimaryTalentTree() == 3 then
 		hasExecute = true
-	elseif playerClass == 'HUNTER' then
+	elseif playerClass == 'HUNTER' then -- All hunter specs use Kill Shot
 		hasExecute = true
 	elseif playerClass == 'PALADIN' and GetPrimaryTalentTree() == 3 then
 		hasExecute = true
