@@ -2,8 +2,6 @@ if select(2, UnitClass('player')) ~= 'WARLOCK' then return end
 
 -- CONFIG -----------------------------------------------------------------------------------------------
 
-local minHealth = 240000		-- minimum health of target for pDrainSoulTimer to do anything
-local notification = true		-- if you want a notification in the chatframe when the addon activates
 local alwaysPlayTick = true		-- plays the drain soul tick sound for all specs
 
 -- END CONFIG -------------------------------------------------------------------------------------------
@@ -13,8 +11,8 @@ local alwaysPlayTick = true		-- plays the drain soul tick sound for all specs
 local played = false
 local f = CreateFrame('Frame')
 f:RegisterEvent('ACTIVE_TALENT_GROUP_CHANGED')
-f:RegisterEvent('PLAYER_ENTERING_WORLD')
-if alwaysPlayTick then f:RegisterEvent('COMBAT_LOG_EVENT_UNFILTERED') end
+f:RegisterEvent('PLAYER_ALIVE')
+f:RegisterEvent('COMBAT_LOG_EVENT_UNFILTERED')
 
 f:SetScript('OnEvent', function(self, event, ...) if self[event] then return self[event] (self, event, ...) end end)
 
@@ -22,13 +20,9 @@ function checkForTalent()
 	local rank, maxRank = select(5, GetTalentInfo(1, 13, false, false, nil))
 	
 	if rank and (maxRank > 0) and rank == maxRank then
-		if not alwaysPlayTick then f:RegisterEvent('COMBAT_LOG_EVENT_UNFILTERED') end
 		f:RegisterEvent('UNIT_HEALTH')
 		f:RegisterEvent('PLAYER_TARGET_CHANGED')
-
-		if notification then print ('|cff4e96f7|Hspell:47200|h[Death\'s Embrace]|h|r detected, activating prDrainSoulTimer') end
 	else
-		if not alwaysPlayTick then f:UnregisterEvent('COMBAT_LOG_EVENT_UNFILTERED') end
 		f:UnregisterEvent('UNIT_HEALTH')
 		f:UnregisterEvent('PLAYER_TARGET_CHANGED')
 	end
@@ -38,7 +32,7 @@ function f:ACTIVE_TALENT_GROUP_CHANGED()
 	checkForTalent()
 end
 
-function f:PLAYER_ENTERING_WORLD()
+function f:PLAYER_ALIVE()
 	checkForTalent()
 end
 	
@@ -57,13 +51,13 @@ function f:COMBAT_LOG_EVENT_UNFILTERED(event, ...)
 end
 
 function f:UNIT_HEALTH()
-	if played or not UnitIsEnemy('player', 'target') or UnitIsDead('target') then
+	if played or not UnitIsEnemy('player', 'target') or UnitIsDeadOrGhost('target') or CanExitVehicle() then
 		return
 	end
 	
 	local currentHealth = UnitHealth('target') / UnitHealthMax('target')
 	
-	if UnitHealthMax('target') > minHealth then
+	if (UnitClassification('target') == ('worldboss' or 'elite' or 'rareelite')) or UnitIsPlayer('target') then
 		if currentHealth < 0.25 then
 			PlaySoundFile('Interface\\AddOns\\prDrainSoulTimer\\Sounds\\quaddamage.mp3')
 			played = true
