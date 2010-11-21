@@ -15,7 +15,7 @@ end
 
 local frame = CreateFrame('Frame')
 frame:SetScript("OnEvent", OnEvent)
-frame:RegisterEvent('PLAYER_ENTERING_WORLD')
+frame:RegisterEvent('PLAYER_ALIVE')
 
 local checkForExecute = function()
 	local hasExecute = false
@@ -33,7 +33,6 @@ local checkForExecute = function()
 	end
 	
 	if hasExecute then
-		print('Execute found, activating!')
 		frame:RegisterEvent('UNIT_HEALTH')
 		frame:RegisterEvent('PLAYER_TARGET_CHANGED')
 		if playerClass == 'WARLOCK' then
@@ -52,9 +51,9 @@ function addon:ACTIVE_TALENT_GROUP_CHANGED()
 	checkForExecute()
 end
 
-function addon:PLAYER_ENTERING_WORLD()
+function addon:PLAYER_ALIVE()
 	frame:RegisterEvent('ACTIVE_TALENT_GROUP_CHANGED')
-	frame:UnregisterEvent('PLAYER_ENTERING_WORLD')
+	frame:UnregisterEvent('PLAYER_ALIVE')
 	checkForExecute()
 end
 	
