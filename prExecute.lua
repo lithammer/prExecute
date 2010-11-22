@@ -14,8 +14,8 @@ local OnEvent = function(self, event, ...)
 end
 
 local frame = CreateFrame('Frame')
+frame:RegisterEvent('PLAYER_ENTERING_WORLD')
 frame:SetScript("OnEvent", OnEvent)
-frame:RegisterEvent('PLAYER_ALIVE')
 
 local checkForExecute = function()
 	local hasExecute = false
@@ -51,9 +51,9 @@ function addon:ACTIVE_TALENT_GROUP_CHANGED()
 	checkForExecute()
 end
 
-function addon:PLAYER_ALIVE()
+function addon:PLAYER_ENTERING_WORLD()
 	frame:RegisterEvent('ACTIVE_TALENT_GROUP_CHANGED')
-	frame:UnregisterEvent('PLAYER_ALIVE')
+	frame:UnregisterEvent('PLAYER_ENTERING_WORLD')
 	checkForExecute()
 end
 	
@@ -72,7 +72,7 @@ function addon:COMBAT_LOG_EVENT_UNFILTERED(event, ...)
 end
 
 function addon:UNIT_HEALTH(self, unit)
-	if played or not UnitIsEnemy('player', 'target') or UnitIsDeadOrGhost('target') or CanExitVehicle() then
+	if (unit ~= 'target') or (played) or (not UnitIsEnemy('player', 'target')) or UnitIsDeadOrGhost('target') or CanExitVehicle() then
 		return
 	end
 	
