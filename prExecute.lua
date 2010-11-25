@@ -20,7 +20,7 @@ frame:SetScript("OnEvent", OnEvent)
 local checkForExecute = function()
 	local hasExecute = false
 	
-	if playerClass == 'WARLOCK' and select(5, GetTalentInfo(1, 13)) > 0 then
+	if playerClass == 'WARLOCK' and GetPrimaryTalentTree() == 1 then
 		hasExecute = true
 	elseif playerClass == 'PRIEST' and GetPrimaryTalentTree() == 3 then
 		hasExecute = true
@@ -72,7 +72,7 @@ function addon:COMBAT_LOG_EVENT_UNFILTERED(event, ...)
 end
 
 function addon:UNIT_HEALTH(self, unit)
-	if (unit ~= 'target') or (played) or (not UnitIsEnemy('player', 'target')) or UnitIsDeadOrGhost('target') or CanExitVehicle() then
+	if (unit ~= 'target') or (played) or CanExitVehicle() or UnitIsDeadOrGhost('target') or (UnitIsFriend('player', 'target')) then
 		return
 	end
 	
@@ -80,6 +80,7 @@ function addon:UNIT_HEALTH(self, unit)
 	
 	if (UnitClassification('target') == ('worldboss' or 'elite' or 'rareelite')) or UnitIsPlayer('target') then
 		if currentHealth < executeRange then
+			print('Execute!')
 			PlaySoundFile('Interface\\AddOns\\'..addonName..'\\Sounds\\quaddamage.mp3')
 			played = true
 		end
