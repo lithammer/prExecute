@@ -78,7 +78,7 @@ function addon:UNIT_HEALTH(self, unit)
 	
 	local currentHealth = UnitHealth('target') / UnitHealthMax('target')
 	
-	if (UnitClassification('target') == ('worldboss' or 'elite' or 'rareelite')) or UnitIsPlayer('target') then
+	if (UnitClassification('target') ~= 'normal' or UnitIsPlayer('target') then
 		if currentHealth < executeRange then
 			print('Execute!')
 			PlaySoundFile('Interface\\AddOns\\'..addonName..'\\Sounds\\quaddamage.mp3')
