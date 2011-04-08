@@ -2,11 +2,13 @@ local addonName, addon = ...
 
 local playerClass = select(2, UnitClass('player'))
 
-local played = false
-local executeRange = 0.25 -- For warlocks and shadow priests
-if playerClass == ('HUNTER' or 'PALADIN' or 'WARRIOR') then
-	executeRange = 0.20
-end
+local ExecuteList = {
+	['HUNTER'] = {20, 20, 20},
+	['PALADIN'] = {nil, nil, 20},
+	['PRIEST'] = {nil, nil, 25},
+	['WARLOCK'] = {25, nil, 20},
+	['WARRIOR'] = {20, 20, nil},
+}
 
 -- Event handling
 local OnEvent = function(self, event, ...)
@@ -18,21 +20,10 @@ frame:RegisterEvent('PLAYER_ENTERING_WORLD')
 frame:SetScript("OnEvent", OnEvent)
 
 local checkForExecute = function()
-	local hasExecute = false
-	
-	if playerClass == 'WARLOCK' and GetPrimaryTalentTree() == 1 then
-		hasExecute = true
-	elseif playerClass == 'PRIEST' and GetPrimaryTalentTree() == 3 then
-		hasExecute = true
-	elseif playerClass == 'HUNTER' then -- All hunter specs use Kill Shot
-		hasExecute = true
-	elseif playerClass == 'PALADIN' and GetPrimaryTalentTree() == 3 then
-		hasExecute = true
-	elseif playerClass == 'WARRIOR' and GetPrimaryTalentTree() == (1 or 2) then
-		hasExecute = true
-	end
-	
+	local hasExecute = ExecuteList[playerClass][GetPrimaryTalentTree()] or false
+
 	if hasExecute then
+		executeRange = hasExecute
 		frame:RegisterEvent('UNIT_HEALTH')
 		frame:RegisterEvent('PLAYER_TARGET_CHANGED')
 		if playerClass == 'WARLOCK' then
@@ -56,7 +47,7 @@ function addon:PLAYER_ENTERING_WORLD()
 	frame:UnregisterEvent('PLAYER_ENTERING_WORLD')
 	checkForExecute()
 end
-	
+
 function addon:COMBAT_LOG_EVENT_UNFILTERED(event, ...)
 	local eventType = select(2, ...)
 	local srcName = select(4, ...)
@@ -71,13 +62,14 @@ function addon:COMBAT_LOG_EVENT_UNFILTERED(event, ...)
 	end
 end
 
+local played = false
 function addon:UNIT_HEALTH(self, unit)
 	if (unit ~= 'target') or (played) or CanExitVehicle() or UnitIsDeadOrGhost('target') or (UnitIsFriend('player', 'target')) then
 		return
 	end
-	
-	local currentHealth = UnitHealth('target') / UnitHealthMax('target')
-	
+
+	local currentHealth = (UnitHealth('target') / UnitHealthMax('target')) * 100
+
 	if (UnitClassification('target') ~= 'normal') or UnitIsPlayer('target') then
 		if currentHealth < executeRange then
 			PlaySoundFile('Interface\\AddOns\\'..addonName..'\\Sounds\\quaddamage.mp3')
