@@ -3,9 +3,13 @@ local addonName, addon = ...
 local playerClass = select(2, UnitClass('player'))
 
 local ExecuteList = {
+	['DRUID'] = {nil, nil, nil},
+	['DEATHKNIGHT'] = {nil, nil, nil},
 	['HUNTER'] = {20, 20, 20},
 	['PALADIN'] = {nil, nil, 20},
 	['PRIEST'] = {nil, nil, 25},
+	['ROGUE'] = {nil, nil, nil},
+	['SHAMAN'] = {nil, nil, nil},
 	['WARLOCK'] = {25, nil, 20},
 	['WARRIOR'] = {20, 20, nil},
 }
