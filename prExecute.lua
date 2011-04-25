@@ -5,6 +5,7 @@ local playerClass = select(2, UnitClass('player'))
 local ExecuteList = {
 	['DRUID'] = {nil, nil, nil},
 	['DEATHKNIGHT'] = {nil, nil, nil},
+	['MAGE'] = {nil, nil, nil},
 	['HUNTER'] = {20, 20, 20},
 	['PALADIN'] = {nil, nil, 20},
 	['PRIEST'] = {nil, nil, 25},
