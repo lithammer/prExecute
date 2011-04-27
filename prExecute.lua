@@ -55,10 +55,10 @@ end
 
 function addon:COMBAT_LOG_EVENT_UNFILTERED(event, ...)
 	local eventType = select(2, ...)
-	local srcName = select(4, ...)
+	local srcName = select(5, ...)
 	
 	if eventType == 'SPELL_PERIODIC_DAMAGE' and srcName == UnitName('player') then
-		local spellName = select(10, ...)
+		local spellName = select(11, ...)
 		local drainSoulName = GetSpellInfo(1120) --Drain Soul
 
 		if spellName == drainSoulName then
