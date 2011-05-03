@@ -1,7 +1,5 @@
 local addonName, addon = ...
 
-local playerClass = select(2, UnitClass('player'))
-
 local ExecuteList = {
 	['DRUID'] = {nil, nil, nil},
 	['DEATHKNIGHT'] = {nil, nil, nil},
@@ -15,61 +13,33 @@ local ExecuteList = {
 	['WARRIOR'] = {20, 20, nil},
 }
 
--- Event handling
-local OnEvent = function(self, event, ...)
+local playerClass = select(2, UnitClass('player'))
+local playerName = UnitName('player')
+
+local warningSound = 'Interface\\AddOns\\'..addonName..'\\Sounds\\quaddamage.mp3'
+local tickSound = 'Interface\\AddOns\\'..addonName..'\\Sounds\\tick.mp3'
+
+local function OnEvent(self, event, ...)
 	addon[event](self, event, ...)
-end
-
-local frame = CreateFrame('Frame')
-frame:RegisterEvent('PLAYER_ENTERING_WORLD')
-frame:SetScript("OnEvent", OnEvent)
-
-local checkForExecute = function()
-	local hasExecute = ExecuteList[playerClass][GetPrimaryTalentTree()] or false
-
-	if hasExecute then
-		executeRange = hasExecute
-		frame:RegisterEvent('UNIT_HEALTH')
-		frame:RegisterEvent('PLAYER_TARGET_CHANGED')
-		if playerClass == 'WARLOCK' then
-			frame:RegisterEvent('COMBAT_LOG_EVENT_UNFILTERED')
-		end
-	else
-		frame:UnregisterEvent('UNIT_HEALTH')
-		frame:UnregisterEvent('PLAYER_TARGET_CHANGED')
-		if playerClass == 'WARLOCK' then
-			frame:UnregisterEvent('COMBAT_LOG_EVENT_UNFILTERED')
-		end
-	end
 end
 
 function addon:ACTIVE_TALENT_GROUP_CHANGED()
 	checkForExecute()
 end
 
-function addon:PLAYER_ENTERING_WORLD()
-	frame:RegisterEvent('ACTIVE_TALENT_GROUP_CHANGED')
-	frame:UnregisterEvent('PLAYER_ENTERING_WORLD')
-	checkForExecute()
-end
-
+local drainSoulName = GetSpellInfo(1120) --Drain Soul
 function addon:COMBAT_LOG_EVENT_UNFILTERED(event, ...)
-	local eventType = select(2, ...)
-	local srcName = select(5, ...)
-	
-	if eventType == 'SPELL_PERIODIC_DAMAGE' and srcName == UnitName('player') then
-		local spellName = select(11, ...)
-		local drainSoulName = GetSpellInfo(1120) --Drain Soul
+	local _, eventType, _, _, srcName, _, _, _, _, _, spellName = ...
 
-		if spellName == drainSoulName then
-        	PlaySoundFile('Interface\\AddOns\\'..addonName..'\\Sounds\\tick.mp3')
-		end
+	if eventType == 'SPELL_PERIODIC_DAMAGE' and srcName == playerName and spellName == drainSoulName then
+		PlaySoundFile(tickSound)
 	end
 end
 
-local played = false
+local executeRange = 0
+local soundPlayed = false
 function addon:UNIT_HEALTH(self, unit)
-	if (unit ~= 'target') or (played) or CanExitVehicle() or UnitIsDeadOrGhost('target') or (UnitIsFriend('player', 'target')) then
+	if (unit ~= 'target') or soundPlayed or CanExitVehicle() or UnitIsDeadOrGhost('target') or UnitIsFriend('player', 'target') then
 		return
 	end
 
@@ -77,12 +47,39 @@ function addon:UNIT_HEALTH(self, unit)
 
 	if (UnitClassification('target') ~= 'normal') or UnitIsPlayer('target') then
 		if currentHealth < executeRange then
-			PlaySoundFile('Interface\\AddOns\\'..addonName..'\\Sounds\\quaddamage.mp3')
-			played = true
+			PlaySoundFile(warningSound)
+			soundPlayed = true
 		end
 	end
 end
 
 function addon:PLAYER_TARGET_CHANGED()
-	played = false
+	soundPlayed = false
+end
+
+local frame = CreateFrame('Frame')
+frame:RegisterEvent('PLAYER_ENTERING_WORLD')
+frame:SetScript('OnEvent', OnEvent)
+
+local function checkForExecute()
+	local hasExecute = ExecuteList[playerClass][GetPrimaryTalentTree()] or false
+
+	if hasExecute then
+		executeRange = hasExecute
+		frame:RegisterEvent('UNIT_HEALTH')
+		frame:RegisterEvent('PLAYER_TARGET_CHANGED')
+	else
+		frame:UnregisterEvent('UNIT_HEALTH')
+		frame:UnregisterEvent('PLAYER_TARGET_CHANGED')
+	end
+
+	if playerClass == 'WARLOCK' then
+		frame:RegisterEvent('COMBAT_LOG_EVENT_UNFILTERED')
+	end
+end
+
+function addon:PLAYER_ENTERING_WORLD()
+	frame:RegisterEvent('ACTIVE_TALENT_GROUP_CHANGED')
+	frame:UnregisterEvent('PLAYER_ENTERING_WORLD')
+	checkForExecute()
 end
