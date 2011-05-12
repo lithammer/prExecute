@@ -19,10 +19,6 @@ local playerName = UnitName('player')
 local warningSound = 'Interface\\AddOns\\'..addonName..'\\Sounds\\quaddamage.mp3'
 local tickSound = 'Interface\\AddOns\\'..addonName..'\\Sounds\\tick.mp3'
 
-local function OnEvent(self, event, ...)
-	addon[event](self, event, ...)
-end
-
 function addon:ACTIVE_TALENT_GROUP_CHANGED()
 	checkForExecute()
 end
@@ -82,4 +78,8 @@ function addon:PLAYER_ENTERING_WORLD()
 	frame:RegisterEvent('ACTIVE_TALENT_GROUP_CHANGED')
 	frame:UnregisterEvent('PLAYER_ENTERING_WORLD')
 	checkForExecute()
+end
+
+local function OnEvent(self, event, ...)
+	addon[event](self, event, ...)
 end
