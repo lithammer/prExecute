@@ -55,9 +55,14 @@ function addon:PLAYER_ENTERING_WORLD()
 	checkForExecute()
 end
 
+local toc = select(4, GetBuildInfo())
 local drainSoulName = GetSpellInfo(1120) --Drain Soul
 function addon:COMBAT_LOG_EVENT_UNFILTERED(event, ...)
-	local _, eventType, _, _, srcName, _, _, _, _, _, spellName = ...
+	if toc == 40200 then
+		local _, eventType, _, _, srcName, _, _, _, _, _, _, _, spellName = ...
+	else
+		local _, eventType, _, _, srcName, _, _, _, _, _, spellName = ...
+	end
 
 	if eventType == 'SPELL_PERIODIC_DAMAGE' and srcName == playerName and spellName == drainSoulName then
 		PlaySoundFile(tickSound)
