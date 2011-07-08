@@ -17,13 +17,13 @@ local ExecuteList = {
 }
 
 -- Sound to play when you enter execute phase
-local warningSound = 'Interface\\AddOns\\'..addonName..'\\Sounds\\quaddamage.mp3'
+local warningSound = 'Interface\\AddOns\\prExecute\\Sounds\\quaddamage.mp3'
 -- Tick sound for Drain Soul (Warlocks only)
-local tickSound = 'Interface\\AddOns\\'..addonName..'\\Sounds\\tick.mp3'
+local tickSound = 'Interface\\AddOns\\prExecute\\Sounds\\tick.mp3'
 
 ---[ END CONFIG ]--------------------------------------------------------------
 
-local addonName, addon = ...
+local _, addon = ...
 
 local playerClass = select(2, UnitClass('player'))
 local playerName = UnitName('player')
