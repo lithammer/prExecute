@@ -69,7 +69,6 @@ function addon:UNIT_HEALTH(self, unit)
 	local currentHealth = (UnitHealth('target') / UnitHealthMax('target')) * 100
 
 	if (UnitClassification('target') ~= 'normal') or UnitIsPlayer('target') then
-		
 		if currentHealth < executeRange then
 			PlaySoundFile(warningSound)
 			soundPlayed = true
@@ -87,7 +86,7 @@ end
 
 -- Frame creation
 
-local f = Createf('f')
+local f = CreateFrame('Frame')
 f:RegisterEvent('ACTIVE_TALENT_GROUP_CHANGED')
 f:RegisterEvent('PLAYER_ENTERING_WORLD')
 f:RegisterEvent('PLAYER_TARGET_CHANGED')
