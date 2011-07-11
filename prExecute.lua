@@ -39,7 +39,7 @@ local function checkForExecute()
 	executeRange = ExecuteList[playerClass][GetPrimaryTalentTree()] or 0
 end
 
-local function isInvalidUnit()
+local function isInvalidUnit(unit)
 	return (unit ~= 'target') or soundPlayed or CanExitVehicle() or UnitIsDeadOrGhost('target') or UnitIsFriend('player', 'target')
 end
 
@@ -62,7 +62,7 @@ function addon:PLAYER_TARGET_CHANGED()
 end
 
 function addon:UNIT_HEALTH(self, unit)
-	if isInvalidUnit() then
+	if isInvalidUnit(unit) then
 		return
 	end
 
