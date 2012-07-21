@@ -36,11 +36,11 @@ local soundPlayed = false
 
 -- Utility functions
 
-local function checkForExecute()
-	executeRange = ExecuteList[playerClass][GetPrimaryTalentTree()] or 0
+local function CheckForExecute()
+	executeRange = ExecuteList[playerClass][GetSpecialization()] or 0
 end
 
-local function isInvalidUnit(unit)
+local function IsInvalidUnit(unit)
 	return (unit ~= 'target') or soundPlayed or CanExitVehicle() or UnitIsDeadOrGhost('target') or UnitIsFriend('player', 'target')
 end
 
@@ -51,11 +51,11 @@ local function OnEvent(self, event, ...)
 end
 
 function addon:ACTIVE_TALENT_GROUP_CHANGED()
-	checkForExecute()
+	CheckForExecute()
 end
 
 function addon:PLAYER_ENTERING_WORLD()
-	checkForExecute()
+	CheckForExecute()
 end
 
 function addon:PLAYER_TARGET_CHANGED()
@@ -63,7 +63,7 @@ function addon:PLAYER_TARGET_CHANGED()
 end
 
 function addon:UNIT_HEALTH(self, unit)
-	if isInvalidUnit(unit) then
+	if IsInvalidUnit(unit) then
 		return
 	end
 
