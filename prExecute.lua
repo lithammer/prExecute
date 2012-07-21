@@ -8,6 +8,7 @@ local ExecuteList = {
 	['DRUID'] =       { 0,  0,  0},
 	['HUNTER'] =      {20, 20, 20},
 	['MAGE'] =        { 0,  0,  0},
+	['MONK'] =        { 0,  0,  0},
 	['PALADIN'] =     { 0,  0, 20},
 	['PRIEST'] =      { 0,  0, 25},
 	['ROGUE'] =       { 0,  0,  0},
