@@ -10,7 +10,7 @@ local ExecuteList = {
 	['MAGE'] =        { 0,  0,  0},
 	['MONK'] =        { 0,  0,  0},
 	['PALADIN'] =     { 0,  0, 20},
-	['PRIEST'] =      { 0,  0, 25},
+	['PRIEST'] =      { 0,  0, 20},
 	['ROGUE'] =       { 0,  0,  0},
 	['SHAMAN'] =      { 0,  0,  0},
 	['WARLOCK'] =     {25,  0, 20},
@@ -62,7 +62,7 @@ function addon:PLAYER_TARGET_CHANGED()
 	soundPlayed = false
 end
 
-function addon:UNIT_HEALTH(self, unit)
+function addon:UNIT_HEALTH_FREQUENT(self, unit)
 	if IsInvalidUnit(unit) then
 		return
 	end
@@ -91,7 +91,7 @@ local f = CreateFrame('Frame')
 f:RegisterEvent('ACTIVE_TALENT_GROUP_CHANGED')
 f:RegisterEvent('PLAYER_ENTERING_WORLD')
 f:RegisterEvent('PLAYER_TARGET_CHANGED')
-f:RegisterEvent('UNIT_HEALTH')
+f:RegisterUnitEvent('UNIT_HEALTH_FREQUENT', 'target')
 if playerClass == 'WARLOCK' then
 	f:RegisterEvent('COMBAT_LOG_EVENT_UNFILTERED')
 end
