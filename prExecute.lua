@@ -3,7 +3,7 @@
 
 -- This is the specs from left to right, and the percentage value that the
 -- execute sound should play, 0 to disable.
-local ExecuteList = {
+local executeList = {
 	['DEATHKNIGHT'] = { 0,  0,  0},
 	['DRUID'] =       { 0,  0,  0},
 	['HUNTER'] =      {20, 20, 20},
@@ -13,7 +13,7 @@ local ExecuteList = {
 	['PRIEST'] =      { 0,  0, 20},
 	['ROGUE'] =       { 0,  0,  0},
 	['SHAMAN'] =      { 0,  0,  0},
-	['WARLOCK'] =     {25,  0, 20},
+	['WARLOCK'] =     {20,  0, 20},
 	['WARRIOR'] =     {20, 20,  0},
 }
 
@@ -27,35 +27,34 @@ local tickSound = 'Interface\\AddOns\\prExecute\\Sounds\\tick.mp3'
 local _, addon = ...
 
 local playerClass = select(2, UnitClass('player'))
-local playerName = UnitName('player')
-
-local drainSoulName = GetSpellInfo(1120) --Drain Soul
 
 local executeRange = 0
 local soundPlayed = false
 
--- Utility functions
+-- http://wowprogramming.com/docs/api/UnitClassification
+local validUnitTypes = {
+	--trivial = true,
+	--normal = true,
+	elite = true,
+	rare = true,
+	rareelite = true,
+	worldboss = true,
+}
 
-local function CheckForExecute()
-	executeRange = ExecuteList[playerClass][GetSpecialization()] or 0
+local function UpdateExecuteRange()
+	executeRange = executeList[playerClass][GetSpecialization()] or 0
 end
 
-local function IsInvalidUnit(unit)
-	return (unit ~= 'target') or soundPlayed or CanExitVehicle() or UnitIsDeadOrGhost('target') or UnitIsFriend('player', 'target')
-end
-
--- Event handling
-
-local function OnEvent(self, event, ...)
-	addon[event](self, event, ...)
+function addon:PLAYER_SPECIALIZATION_CHANGED()
+	UpdateExecuteRange()
 end
 
 function addon:ACTIVE_TALENT_GROUP_CHANGED()
-	CheckForExecute()
+	UpdateExecuteRange()
 end
 
 function addon:PLAYER_ENTERING_WORLD()
-	CheckForExecute()
+	UpdateExecuteRange()
 end
 
 function addon:PLAYER_TARGET_CHANGED()
@@ -63,19 +62,22 @@ function addon:PLAYER_TARGET_CHANGED()
 end
 
 function addon:UNIT_HEALTH_FREQUENT(self, unit)
-	if IsInvalidUnit(unit) then
+	if soundPlayed or CanExitVehicle() or UnitIsDeadOrGhost('target') or UnitIsFriend('player', 'target') then
 		return
 	end
 
-	local currentHealth = (UnitHealth('target') / UnitHealthMax('target')) * 100
+	local currentHealth = UnitHealth('target') / UnitHealthMax('target') * 100
 
-	if (UnitClassification('target') ~= 'normal') or UnitIsPlayer('target') then
+	if validUnitTypes[UnitClassification('target')] or UnitIsPlayer('target') then
 		if currentHealth < executeRange then
 			PlaySoundFile(warningSound)
 			soundPlayed = true
 		end
 	end
 end
+
+local playerName = UnitName('player')
+local drainSoulName = GetSpellInfo(1120) --Drain Soul
 
 function addon:COMBAT_LOG_EVENT_UNFILTERED(event, ...)
 	local _, eventType, _, _, srcName, _, _, _, _, _, _, _, spellName = ...
@@ -89,6 +91,7 @@ end
 
 local f = CreateFrame('Frame')
 f:RegisterEvent('ACTIVE_TALENT_GROUP_CHANGED')
+f:RegisterEvent('PLAYER_SPECIALIZATION_CHANGED')
 f:RegisterEvent('PLAYER_ENTERING_WORLD')
 f:RegisterEvent('PLAYER_TARGET_CHANGED')
 f:RegisterUnitEvent('UNIT_HEALTH_FREQUENT', 'target')
@@ -96,4 +99,6 @@ if playerClass == 'WARLOCK' then
 	f:RegisterEvent('COMBAT_LOG_EVENT_UNFILTERED')
 end
 
-f:SetScript('OnEvent', OnEvent)
+f:SetScript('OnEvent', function(self, event, ...)
+	addon[event](self, event, ...)
+end)
