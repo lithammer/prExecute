@@ -1,4 +1,5 @@
 local _, addon = ...
+addon.config = {}
 
 -- This is the specs from left to right, and the percentage value that the
 -- execute sound should play, 0 to disable.
