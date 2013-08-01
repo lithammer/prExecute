@@ -1,4 +1,5 @@
 ## Interface: 50300
 ## Title: |cff669933pr|rExecute
 
+config.lua
 prExecute.lua
